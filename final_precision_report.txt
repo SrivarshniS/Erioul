@@ -1,0 +1,40 @@
+System Time: 2026-02-09 18:13:24.779232
+
+>>> TEST: Identified Bug
+Input:  breakfast at 9:00 a.m. and dinner at 10:00 p.m.
+  RESULT 1: Task='breakfast' | Date=2026-02-10 | Time=09:00
+  RESULT 2: Task='dinner' | Date=2026-02-10 | Time=10:00
+
+>>> TEST: Multi-Task with Connectors
+Input:  buy milk at 5 then call mom at 6 also gym at 7
+  RESULT 1: Task='buy milk' | Date=2026-02-10 | Time=05:00
+  RESULT 2: Task='call mom' | Date=2026-02-10 | Time=06:00
+  RESULT 3: Task='gym' | Date=2026-02-10 | Time=07:00
+
+>>> TEST: Relative Date Combinations
+Input:  the day before tomorrow afternoon yoga session and day after today morning standup
+  RESULT 1: Task='yoga' | Date=2026-02-09 | Time=13:00
+  RESULT 2: Task='standup' | Date=2026-02-10 | Time=08:00
+
+>>> TEST: Military Time Cleanup
+Input:  1530 coffee meeting and 0900 gym
+  RESULT 1: Task='coffee meeting' | Date=2026-02-09 | Time=15:30
+  RESULT 2: Task='gym' | Date=2026-02-10 | Time=09:00
+
+>>> TEST: Redundant Words
+Input:  morning 9:00 standup at the office on Monday
+  RESULT 1: Task='standup office' | Date=2026-02-10 | Time=09:00
+
+>>> TEST: Ultimate Stress Test
+Input:  Tomorrow morning at 9:30 I have a project review, then at 11:15 call the supplier about the delayed shipment, after that set a reminder to prepare slides for next week, and by 6 PM check emails and respond to urgent ones, but skip the yoga session I usually do in the evening.
+  RESULT 1: Task='project review' | Date=2026-02-10 | Time=09:30
+  RESULT 2: Task='call supplier about delayed shipment' | Date=2026-02-10 | Time=11:15
+  RESULT 3: Task='slides check emails' | Date=2026-02-10 | Time=18:00
+
+>>> TEST: Negation & Action Words
+Input:  remind me to go to the gym at 8:00 but don't set a reminder for breakfast at 9:00
+  RESULT 1: Task='gym' | Date=2026-02-10 | Time=08:00
+
+>>> TEST: Ambiguous Relative
+Input:  set a task to check email the day after today at 3:00
+  RESULT 1: Task='email' | Date=2026-02-10 | Time=03:00

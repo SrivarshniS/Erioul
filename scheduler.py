@@ -1,50 +1,19 @@
-import sqlite3
+import time
 from datetime import datetime
 from speaker import speak
-import time
-
-conn = sqlite3.connect("database.db", check_same_thread=False)
-cursor = conn.cursor()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    task TEXT,
-    date TEXT,
-    time TEXT,
-    status TEXT
-)
-""")
-conn.commit()
-
-
-def add_task(task, date, time_):
-    cursor.execute(
-        "INSERT INTO tasks (task, date, time, status) VALUES (?, ?, ?, ?)",
-        (task, date, time_, "pending")
-    )
-    conn.commit()
-
+import db_manager
 
 def check_reminders():
+    """Background loop to check for pending tasks and speak reminders."""
     while True:
         now = datetime.now()
         current_date = now.strftime("%Y-%m-%d")
         current_time = now.strftime("%H:%M")
 
-        cursor.execute("""
-            SELECT id, task FROM tasks
-            WHERE date=? AND time=? AND status='pending'
-        """, (current_date, current_time))
+        tasks = db_manager.get_pending_tasks(current_date, current_time)
 
-        tasks = cursor.fetchall()
-
-        for task in tasks:
-            speak(f"Reminder. It's time for {task[1]}")
-            cursor.execute(
-                "UPDATE tasks SET status='done' WHERE id=?",
-                (task[0],)
-            )
-            conn.commit()
+        for task_id, task_text in tasks:
+            speak(f"Reminder. It's time for {task_text}")
+            db_manager.update_task_status(task_id, 'done')
 
         time.sleep(30)
